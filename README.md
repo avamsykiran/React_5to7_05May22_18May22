@@ -188,3 +188,25 @@ ReactJS
     Create a react app
     --------------------------------------------
         npx create-react-app app-name
+
+    ReactJS Forms - Controlled Component Forms
+    ---------------------------------------------
+
+        Each form element has to remember
+        the value it holds,
+
+        And the component as well holds data in its state.
+
+        if the state of the component is mapped to the
+        form element and chagnes made to the form element
+        are directed to the component, serving a single
+        source of truth, we call it a controlled component.
+
+    Event Bubbling
+    ---------------------------------------------------------
+
+        a parent component shares a event handler with 
+        a child component.
+        
+        and the child component will invoke the event handler
+        when a event in the child component occurs.
