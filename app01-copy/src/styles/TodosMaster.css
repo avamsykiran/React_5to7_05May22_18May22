@@ -1,0 +1,7 @@
+.todos li{
+    cursor: pointer;
+}
+
+.markDone{
+    text-decoration: line-through;
+}
