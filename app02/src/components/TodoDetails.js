@@ -10,8 +10,18 @@ const TodoDetails = props => (
             {props.todo.status}
         </div>
         <div className="col-2">
-            <button className='btn btn-sm btn-secondary'>EDIT</button>
-            <button className='btn btn-sm btn-danger'>DELETE</button>
+            
+            <button 
+                className='btn btn-sm btn-secondary'
+                onClick={e => props.editTodo(props.todo.id)}>
+                    EDIT
+            </button>
+
+            <button 
+                className='btn btn-sm btn-danger' 
+                onClick={e => props.delTodo(props.todo.id)}>
+                    DELETE
+            </button>
         </div>
     </div>
 );

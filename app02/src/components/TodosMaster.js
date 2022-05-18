@@ -32,12 +32,42 @@ class TodosMaster extends Component {
         this.setState({todos,pendingCount,completedCount});
     }
 
+    del = id => {
+        let todos = this.state.todos.filter(t => t.id!==id);
+        let pendingCount = todos.filter(t => t.status==='PENDING').length;
+        let completedCount = todos.length - pendingCount;
+
+        this.setState({todos,pendingCount,completedCount});
+    }
+
+    markEditable = id => {
+        let todos = this.state.todos.map(t => t.id!==id?t:{...t,editable:true});
+      
+        this.setState({todos});
+    }    
+    
+    unmarkEditable = id => {
+        let todos = this.state.todos.map(t => t.id!==id?t:{...t,editable:undefined});
+      
+        this.setState({todos});
+    }
+
+    update = todo => {
+
+        let todos =this.state.todos.map(t => t.id!==todo.id?t:{...todo,editable:undefined});
+      
+        let pendingCount = todos.filter(t => t.status==='PENDING').length;
+        let completedCount = todos.length - pendingCount;
+
+        this.setState({todos,pendingCount,completedCount});
+    }
+
     render(){
 
         let {todos,pendingCount,completedCount} = this.state;
 
         return (
-            <section className='todos'>
+            <section className='col-sm-10 mx-auto '>
                 <h4>Todos</h4>
 
                 <TodosSummary completed={completedCount} pending={pendingCount}/>
@@ -45,7 +75,20 @@ class TodosMaster extends Component {
                 <div className="p-1">
                     <TodoForm addTodo={this.add} />
                     {todos.map(
-                        todo => <TodoDetails todo={todo} key={todo.id} />
+                        todo => (
+                            todo.editable?
+                            <TodoForm 
+                                isEditing={true} 
+                                updateTodo={this.update} 
+                                cancel={this.unmarkEditable}
+                                todo={todo} 
+                                key={todo.id} /> :
+                            <TodoDetails 
+                                todo={todo} 
+                                key={todo.id} 
+                                delTodo={this.del}
+                                editTodo={this.markEditable}  />
+                        )
                     )}
                 </div>
             </section>
