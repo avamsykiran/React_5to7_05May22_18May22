@@ -210,3 +210,261 @@ ReactJS
         
         and the child component will invoke the event handler
         when a event in the child component occurs.
+
+    React Component Life Cycle Methods
+    ------------------------------------------------------------------------
+
+            constructor()               //compoennt state initialization
+                ↓
+            render()                    //do not call setState here..
+                ↓
+            componentDidMount()         //means that the component loading is complete
+                |                       // equivalent to onload evnet
+                |                       // used to do the rest api calls.
+                |
+                \ When ever the state gets updated/chganed \
+                            |
+                            ↓
+                        render()            //do not call setState here..
+                            ↓
+                    componentDidUpdate()    //anything to be executed
+                                            //after the component is rendered,
+                                            ////do not call setState here..
+
+                 \ When ever an error occurs at the time component creation or rendering \
+                            |
+                            ↓
+                        componentDidCatch()
+                        
+                \ Just before the component un loads \
+                            |
+                            ↓
+                        componentWillUnmount()
+        
+    React Hooks
+    -------------------------------------------------
+
+                enable the functional component
+                to have lifecycle methods and local
+                state.
+
+                1. useState
+
+                            params: initialState
+                            return: [stateValue,functionToModifytheState]
+
+
+                    let [x,setX] = useState(0);
+                    let [emp,setEmp] = useState({empId:10,name:'vamsy'});
+
+                2. useEffect
+
+                            params: a function,an array (optional)
+                            return: none
+
+                        the function passed is executed
+                        after the render. (equivalent to
+                        componentDidMount and componentDidUpdate).
+
+                        the optional array is a array of dependencies.
+                        this array cna contain one or more local state
+                        fields of the component. When ever
+                        the local state field supplied in this array
+                        gets modified, the function passed will
+                        bve executed.
+
+                        if no array is passed, the fucntion executes
+                        after every render. 
+
+                        if an empty array is passed the function executes only once
+                        after the first render.
+
+    Integrating React with REST api Calls - axios
+    -----------------------------------------------------------------------
+
+        AXIOS is an independent JS library to do rest api calls.
+
+        npm install axios --save
+
+        axios.get(url) : Promise
+        axios.put(url,reqBody) : Promise
+        axios.post(url,reqBody) : Promise
+        axios.delete(url) : Promise
+    
+    React State Management - Redux
+    ------------------------------------------------------------------------
+
+          is a javascript library that provides centralzed,
+                application level state mangement.
+
+                    npm install --save redux
+
+                    let mystore = createStore(reducer);
+
+                        store       is a repository of state.
+                                    the one that contains all state.
+                                    one app ideally has only one store.
+
+                        reducer     is a a function:
+                                            params: oldState,action
+                                            returns:    modifiedState
+
+                                    an app can have any number of reducers,
+                                    but all those reducrs must be combined into
+                                    one rootReducer.
+
+                        action      is a object with two propeties:
+                                        type            indicate what action tobe done
+                                        payload         data needed to do the action.
+
+                                        { type:'ADD_EMP', payload:{eid:1,ename:'Vamsy'}}
+
+                                        { type:'ADD_EMP', emp:{eid:1,ename:'Vamsy'}}
+
+                                        { type:'DEL_EMP', empId:102}
+        
+    ConnectAPI   -  a library to intergate Redux with React
+    -----------------------------------------------------------
+                         
+            npm install --save react-redux
+
+            Provider        inbuilt component to attach
+                            a redux store wiht the App component.
+
+                            <Provider store={myStore}>
+                                <App />
+                            </Provider>
+
+            connect         is a inbuilt function
+                                params: mapStateToProps,mapDisptachToProps
+                                return: highOrderComponent
+            
+            mapStateToProps  is a function that maps requried portion
+                                of the state with the props pf a component.
+                                        params: wholeStateInStore
+                                        return: a json object containing a portion of the
+                                                    wholeStateInStore
+
+            dispatch         is a function that carrys an action
+                            from a component and gives it to the reducer.
+
+            
+            mapDisptachToProps  is a function that maps 'dispatch calls' to
+                                    event handlers of the component.
+                                    params: disptach
+                                    return: a json object containing event ahdnling
+                                            functions
+
+            highOrderComponent returned by connect
+                    this is going 
+                        1. to accept any component
+                        2. add json returned by mapStateToProps into props of the component
+                        3. add json returned by mapDisptachToProps into props of the component
+                        4. return that modified component.
+
+
+                |-----------mapStateToProps,mapDispathToProps----------------------->   component2
+                |                  (supply the state and dispatch)                            |
+                |                                                                             |
+            store  -----------mapStateToProps,mapDispathToProps------>   component1           |
+                |                 (supply the state and dispatch)                 |           |
+                |                                                                 |           |
+                |                                                                 |        dispatch(action)
+                |                                                                 |           |
+                |                                                         dispatch(action)    |
+                |                                                                 |           |
+                |<------modified state ---------- reducer <-----(action)-----------           |
+                                                    | <--------(action)----------------------
+
+
+    redux-thunk  - Integrate AXIOS to Redux
+    ----------------------------------------------------------------------------
+
+    npm install --save redux-thunk
+    
+    thunk   means a function that returns another function.
+
+    action      can be an object
+                can be a function (thunk)
+
+                if the action is an object, it is directed to the reducer
+                if the action is a function, that function is executed and it is
+                            the resposnibility of that function to send 
+                            action objects to the reducer.
+
+        
+            store  -----------mapStateToProps,mapDispathToProps--------->   component1         
+                |                 (suppy the state and dispatch)                  |          
+                |                                                                 |      
+                |                                                                 |    
+                |                                                                 |          
+                |                                                         dispatch(actionObjorFun)    
+                |                                                                 |          
+                |                                                                 |
+                |                                                         --------------------
+                |                                          (action object)|                  |(actionFucntion)
+                |                                                         |                  |
+                |<------modified state ---------- reducer <-----(action)--|                  |
+                                                        | <---(action indicating WAIT)-------|
+                                                        |                           -----------------------
+                                                        |                           | that function       |
+                                                        |                           | is executed         |
+                                                        |                           | here,the AXIOS call |
+                                                        |                           | must happen         |
+                                                        |                            -----------------------  
+                                                        |                                     |
+                                                        |                                 -----------
+                                                        | <---(action indicting success)--|          |
+                                                        |                                            |
+                                                        | <---(action indicating failure)------------|
+
+    React Routing
+    ------------------------------------------------------------------------
+
+        npm install --save react-router react-router-dom
+
+            react-router-dom v5
+
+                    <Link to="targetPath"> Link Text </Link>
+
+                    <BrowserRouter>
+                        <Component1 />
+                        <Component2 />  //will appear as common page layout
+
+                        <Route path="/home" component="C4" />
+                        <Route path="/about" component="C5" />
+                        <Route path="/contact" component="C6" />
+
+                    </BrowserRouter>
+
+                    <BrowserRouter>
+                        <Component1 />
+                        <Component2 />  //will appear as common page layout
+
+                        <Switch>
+                            <Route path="/" exact component="C3" />
+                            <Route path="/home" component="C4" />
+                            <Route path="/about" component="C5" />
+                            <Route path="/contact" component="C6" />
+                        </Switch>
+                    </BrowserRouter>
+                    
+                    <Redirect to="targetUrl" />
+
+    react-router-dom v6
+
+                    <Link to="targetPath"> Link Text </Link>
+
+                    <BrowserRouter>
+                        <Component1 />
+                        <Component2 />  //will appear as common page layout
+
+                        <Routes>
+                            <Route path="/" element="C3" />
+                            <Route path="/home" element="C4" />
+                            <Route path="/about" element="C5" />
+                            <Route path="/contact" element="C6" />
+                        </Routes>
+                    </BrowserRouter>
+                    
+                    <Redirect to="targetUrl" />       
